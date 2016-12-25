@@ -3,10 +3,19 @@
 
 ;; state ---------------------
 
+; {type-kw constructor-fn}
 (def types (atom {::any identity}))
+
+; inheritence {type-kw #{parents-type-kws}}
 (def derivations (atom {}))
+
+; {facet-kw {type-kw implementation}}
 (def facets (atom {}))
+
+; {type type-alias}
 (def aliases (atom {}))
+
+; {prefered-type-kw #{type-kw}}
 (def prefs (atom {}))
 
 (defn pstate []
@@ -149,14 +158,21 @@
              (t name (apply constructor args))))
     (extend-type name impl-map)))
 
-(defn declare-alias [type sym]
+(defn declare-alias
+  "register a type-alias
+   ex:
+   (declare-alias clojure.lang.PersistentVector ::vec)"
+  [type sym]
   (declare-type sym)
   (swap! aliases assoc type sym))
 
-(defn prefer [type & types]
+(defn prefer
+  "register a type preference,
+   'type' will be prefered over 'types'"
+  [type & types]
   (swap! prefs assoc type (set types)))
 
-(defn get-prefered-alias [xs type]
+(defn- get-prefered-alias [xs type]
   (let [ret (reduce
               (fn [acc el]
                 (if-let [to-remove (set (get @prefs el))]
