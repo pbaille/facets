@@ -1,10 +1,24 @@
-# foo
+# FOO
 
-A Clojure library designed to ... well, that part is up to you.
+### Functionaly Object Oriented
+
+Pseudo types and polymorphism for clj and cljs.
+
+I would love feedback on this, good or bad.
+
+### Why?
+
+- Creating new types easily.
+- Extend core types without having to write painful deftypes
+- Share implementations.
 
 ## Usage
 
-FIXME
+see source, one ns < 300loc
+
+## Disclaimer
+
+Early stage of development, performance optimisations are not yet adressed, error handling should be correct but i've not written any tests yet.
 
 ## License
 
