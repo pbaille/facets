@@ -108,14 +108,20 @@
     (assert (empty? unknown-types)
             (str "can't derive from unknown types: " unknown-types))))
 
-(defn throw-alias-error [matches type]
-  (throw
-    (Exception.
-      (str "several aliases: \n"
-           matches
-           "\nmatch given type: \n"
-           type
-           "\nNo preference strategy implemented yet"))))
+(defn throw-alias-error
+  ([matches]
+   (throw
+     (Exception.
+       (str "unable to resolve prefered alias from: \n"
+            matches))))
+  ([matches type]
+   (throw
+     (Exception.
+       (str "several aliases: \n"
+            matches
+            "\nmatch given type: \n"
+            type
+            "\nuse prefer function to register type preferences")))))
 
 ;; base ----------------------
 
@@ -181,7 +187,7 @@
               xs
               xs)]
     (condp = (count ret)
-      0 nil
+      0 (throw-alias-error ret)
       1 (first ret)
       (throw-alias-error ret type))))
 
@@ -320,6 +326,15 @@
 ;; exemples -----------------
 
 (comment
+
+  (declare-type ::mytype)
+
+  (t (t> ::mytype [1 2 3]))
+
+  (t? ::mytype (t> ::mytype [1 2 3]))
+
+  (t= (t> ::mytype {:foo :bar}) (t> ::mytype [1 2 3]))
+
   (declare-type ::t1
                 (fn [x] (println "t1 constructor") {:t1k x}))
 
