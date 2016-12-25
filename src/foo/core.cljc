@@ -1,5 +1,4 @@
 (ns foo.core
-  "FOO: Functional Object Oriented, sounds like a terrible ide..."
   (:refer-clojure :exclude [extend-type reify]))
 
 ;; state ---------------------
