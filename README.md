@@ -260,6 +260,14 @@ You can do inheritence with facets to.
 
 Here `::type2` use the implementation of ::type1 
 
+You can do this with `declare-type` and `declare-derived-type` to.
+
+```clojure 
+(f/declare-type ::type3
+  {::facet1 ::type1}
+```
+Here the `::type1` implementation of `::facet1` will be used
+
 ### Anonymous types
 
 You can create anonymous types instances with the `reify`
