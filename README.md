@@ -1,10 +1,4 @@
-# FOO
-
-### Functionaly Object Oriented
-
-Pseudo types and polymorphism for clj and cljs.
-
-I would love feedback on this, good or bad.
+# FACETS
 
 ### Why?
 
@@ -108,8 +102,6 @@ my-instance
 That's all for the moment for types but more to come.
 
 ### Facets
-
-It is just a fancy name for functions, after all a function is just a view over some data, so it fits I think/hope...
 
 ##### Declaring a facet
 

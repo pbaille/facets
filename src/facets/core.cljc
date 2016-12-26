@@ -1,4 +1,4 @@
-(ns foo.core
+(ns facets.core
   (:refer-clojure :exclude [extend-type reify]))
 
 ;; state ---------------------

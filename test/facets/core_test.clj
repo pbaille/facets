@@ -1,4 +1,4 @@
-(ns foo.core-test
+(ns facets.core-test
   (:require [clojure.test :refer :all]
             [foo.core :refer :all]))
 
