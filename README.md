@@ -140,10 +140,11 @@ f/any represent the defaut type.
 - Extending
 
 ```clojure
-(declare-type ::type1)
+;; creating a type to extend
+(f/declare-type ::type1)
 
-(extend-facet ::f1
-  {::t1 (fn [x] implementation...)})
+(f/extend-facet ::f1
+  {::type1 (fn [x] implementation...)})
 ```
 
 - Getting a specific implementation
@@ -160,8 +161,149 @@ f/any represent the defaut type.
 ;=> <implementation map {facet-id implementation}>
 ```
 
-Work In Progress...
+### Aliases
 
+If you want to extend builtin clojure types to implement some facets, you can declare aliases.
+
+```clojure
+(f/declare-alias clojure.lang.PersistentVector ::vec)
+```
+
+So now all instances of PersistentVector will be treated as ::vec 
+
+```clojure
+(t [])
+;=> ::vec
+```
+
+Aliases are resolved using the same strategy used by multimethods, via `isa?` function.
+
+```clojure
+(f/declare-alias clojure.lang.IObj ::obj)
+
+(t ())
+;=> ::obj
+
+(t #{})
+;=> ::obj
+```
+
+In this case all objects that inherit IObj will be treated as ::obj
+
+If a type match several aliases, an error is thrown
+
+```clojure
+(t [])
+;=> CompilerException java.lang.Exception: 
+several aliases: 
+(::obj ::vec)
+match given type: 
+class clojure.lang.PersistentVector
+use prefer function to register type preferences
+```
+
+In this case, as error message explains, use `prefer` function
+
+```clojure
+(f/prefer ::vec ::obj)
+
+(t [])
+;=> ::vec
+```
+
+### Inheritence 
+
+You can create a new type derived from an existing type.
+
+```clojure
+(f/declare-derived-type ::derived-vec [::vec])
+```
+
+This new inherit all the facets implementations of its parent
+
+```clojure
+(f/declare-derived-type ::derived-type [::parent1 ::parent2])
+```
+
+You can specify several parents, first in the list are prioritary over next ones.
+Here if parent1 and parent2 both implement facet1 , the implementation of parent1 would be used.  
+When deriving a type, the constructor is also inherited from parents unless specified as 3rd argument.
+
+```clojure 
+(f/declare-derived-type ::derived-type 
+  [::parent1 ::parent2]
+  (fn [& args] constructor-implementation...))
+```
+
+As with `declare-type` you can provide an implementation-map, that overides inherited implementations.
+
+```clojure 
+;; with constructor
+(f/declare-derived-type ::derived-type 
+  [::parent1 ::parent2]
+  (fn [& args] constructor-implementation...)
+  {::facet1 (fn [x] implementation...)})
+  
+;; without constructor
+(f/declare-derived-type ::derived-type 
+  [::parent1 ::parent2]
+  {::facet1 (fn [x] implementation...)})
+```
+
+You can do inheritence with facets to.
+
+```clojure 
+(f/declare-facet ::facet1 
+  {::type1 (fn [x] type1 implementation of facet1)
+   ::type2 ::type1}
+```
+
+Here ::type2 use the implementation of ::type1 
+
+### Anonymous types
+
+You can create anonymous types instances with the `reify`
+
+passing it some parents:
+
+```clojure
+(f/reify {:some :thing} [::type1 ::type2])
+```
+
+passing it an implementation-map:
+
+```clojure
+(f/reify {:some :thing}
+   {::facet1 <implementation>})
+```
+
+Or both:
+
+```clojure
+(f/reify {:some :thing}
+  [::type1 ::type2]
+  {::facet1 <implementation>})
+```
+
+Under the hood it just attach some metas to the thing wrapped.
+
+You can test if something is reified
+
+```clojure 
+(f/reified? x)
+```
+
+`<f`and `<fs` functions works on reified as well.
+
+### Using facets
+
+```clojure
+(§ ::facet1 type1-instance args...)
+```
+
+### Macros
+
+There is certainly good macros to write over all this, I haven't do it for now.
 
 ## Disclaimer
 

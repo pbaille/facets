@@ -118,7 +118,7 @@
    (throw
      (Exception.
        (str "several aliases: \n"
-            matches
+            (pr-str matches)
             "\nmatch given type: \n"
             type
             "\nuse prefer function to register type preferences")))))
@@ -169,7 +169,8 @@
    ex:
    (declare-alias clojure.lang.PersistentVector ::vec)"
   [type sym]
-  (declare-type sym)
+  (when-not (known-type? sym)
+    (declare-type sym))
   (swap! aliases assoc type sym))
 
 (defn prefer
@@ -379,5 +380,13 @@
 
   (§ ::f1 [1 2 3]))
 
+(declare-alias clojure.lang.IPersistentVector ::vec)
+(declare-alias clojure.lang.IObj ::obj)
+
+(t [])
+
+(prefer ::vec ::obj)
+
+(t [])
 
 
