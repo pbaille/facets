@@ -169,7 +169,7 @@ If you want to extend builtin clojure types to implement some facets, you can de
 (f/declare-alias clojure.lang.PersistentVector ::vec)
 ```
 
-So now all instances of PersistentVector will be treated as ::vec 
+So now all instances of PersistentVector will be treated as `::vec` 
 
 ```clojure
 (t [])
@@ -226,7 +226,7 @@ This new inherit all the facets implementations of its parent
 ```
 
 You can specify several parents, first in the list are prioritary over next ones.  
-Here if parent1 and parent2 both implement facet1 , the implementation of parent1 would be used.  
+Here if `::parent1` and `::parent2` both implement `::facet1` , the implementation of parent1 would be used.  
 When deriving a type, the constructor is also inherited from parents unless specified as 3rd argument.
 
 ```clojure 
@@ -258,7 +258,7 @@ You can do inheritence with facets to.
    ::type2 ::type1}
 ```
 
-Here ::type2 use the implementation of ::type1 
+Here `::type2` use the implementation of ::type1 
 
 ### Anonymous types
 
