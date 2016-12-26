@@ -21,7 +21,7 @@ I would love feedback on this, good or bad.
   (:require [foo.core :as f :refer [t t? t=]]))
 ```
 
-- Attach a type to something
+##### Attach a type to something
 
 ```clojure
 (t :fancy-vector [1 2 3])
@@ -35,7 +35,7 @@ It just add the given type to the metadata of the given thing.
 Note that the given thing should support metadata.  
 You can still use your thing as regular clojure thing one as long as you take care of preserving metas.
 
-- Asking for type:
+##### Asking for type:
 
 the `t` funtion can also tell you the type of the given thing.
 
@@ -44,7 +44,7 @@ the `t` funtion can also tell you the type of the given thing.
 ; => :fancy-vector
 ```
 
-- Check type
+##### Check type
 
 the `t?` funtion can tell you if a thing is of type t.
 
@@ -68,7 +68,7 @@ the `t=` can test if several things are of same type.
   (:require [foo.core :as f :refer [t t? t= t>]]))
 ```
 
-- Declare a simple type called mytype:
+##### Declare a simple type called mytype:
 
 ```clojure
 (f/declare-type ::fancy-vector)
@@ -77,7 +77,7 @@ the `t=` can test if several things are of same type.
 Register a type in the global type registry.  
 note that you have to use namespaced keywords.
 
-- Create an instance of mytype:
+##### Create an instance of mytype:
 
 ```clojure
 (t> ::fancy-vector [1 2 3])
@@ -85,7 +85,7 @@ note that you have to use namespaced keywords.
 
 Like with `t` you can instantiate a type. 
 
-- Declare a type with a constructor function
+##### Declare a type with a constructor function
 
 You can pass a function as 2nd argument to declare-type, to specify a "constructor"
 
@@ -111,7 +111,7 @@ That's all for the moment for types but more to come.
 
 It is just a fancy name for functions, after all a function is just a view over some data, so it fits I think/hope...
 
-- Declaring a facet
+##### Declaring a facet
 
 ```clojure
 (f/declare-facet ::f1)
@@ -119,7 +119,7 @@ It is just a fancy name for functions, after all a function is just a view over 
 
 Just add this facet id to the global registry. Well, not very useful so far...
 
-- With implementations
+##### With implementations
 
 When declaring a facet we can provide implementations for our types.
 
@@ -127,7 +127,7 @@ When declaring a facet we can provide implementations for our types.
 (declare-facet ::f1
   {::mytype (fn [x] (assoc x :some :thing))})
 ```
-- With default case 
+##### With default case 
 
 You can provide a default case if you want: 
 
@@ -137,7 +137,7 @@ You can provide a default case if you want:
 ```
 f/any represent the defaut type.
 
-- Extending
+##### Extending
 
 ```clojure
 ;; creating a type to extend
@@ -147,14 +147,14 @@ f/any represent the defaut type.
   {::type1 (fn [x] implementation...)})
 ```
 
-- Getting a specific implementation
+##### Getting a specific implementation
 
 ```clojure
 (<f ::f1 my-instance)
 ;=> <myinstance implementation of ::f1>
 ```
 
-- Getting all facets implementations for a type 
+##### Getting all facets implementations for a type 
 
 ```clojure
 (<fs ::mytype)
@@ -208,7 +208,7 @@ In this case, as error message explains, use `prefer` function
 (f/prefer ::vec ::obj)
 
 (t [])
-;=> ::vec
+;=> ::vec 
 ```
 
 ### Inheritence 
@@ -225,7 +225,7 @@ This new inherit all the facets implementations of its parent
 (f/declare-derived-type ::derived-type [::parent1 ::parent2])
 ```
 
-You can specify several parents, first in the list are prioritary over next ones.
+You can specify several parents, first in the list are prioritary over next ones.  
 Here if parent1 and parent2 both implement facet1 , the implementation of parent1 would be used.  
 When deriving a type, the constructor is also inherited from parents unless specified as 3rd argument.
 
