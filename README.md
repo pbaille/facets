@@ -258,7 +258,7 @@ You can do inheritence with facets to.
    ::type2 ::type1}
 ```
 
-Here `::type2` use the implementation of ::type1 
+Here `::type2` use the implementation of `::type1` for `::facet1`
 
 You can do this with `declare-type` and `declare-derived-type` to.
 
