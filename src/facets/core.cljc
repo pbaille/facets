@@ -145,6 +145,9 @@
     {:impl-map (or impl-map {})
      :constructor (or constructor (get @types parent) identity)}))
 
+(defn declare-type* [{:keys [id constructor facets spec gen]}]
+  )
+
 (defn declare-type
   "declare a new datatype, attaching it the given constructor
    and facets implementations.
@@ -222,6 +225,10 @@
            (assert-existing-derivations impl-map)
            (merge old-impl-map impl-map))))
 
+(defn extend-facets [& xs]
+  (doseq [[n impls] (partition 2 xs)]
+    (extend-facet n impls)))
+
 (defn- no-default-handler [f]
   (fn [x & _]
     (throw
@@ -250,6 +257,10 @@
   (assert-new-facet name)
   (register-default-impl name impl-map)
   (extend-facet name (dissoc impl-map ::any)))
+
+(defn declare-facets [& xs]
+  (doseq [[n impls] (partition 2 xs)]
+    (declare-facet n impls)))
 
 (defn <fs
   "get all facets implementations for the given type"
@@ -378,15 +389,13 @@
 
   (pstate)
 
-  (§ ::f1 [1 2 3]))
+  (§ ::f1 [1 2 3])
 
-(declare-alias clojure.lang.IPersistentVector ::vec)
-(declare-alias clojure.lang.IObj ::obj)
+  (declare-alias clojure.lang.IPersistentVector ::vec)
+  (declare-alias clojure.lang.IObj ::obj)
 
-(t [])
+  (t [])
 
-(prefer ::vec ::obj)
+  (prefer ::vec ::obj)
 
-(t [])
-
-
+  (t []))
