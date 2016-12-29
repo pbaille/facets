@@ -139,14 +139,23 @@
     (extend-facet f {name impl})))
 
 (defn- parse-declare-type-args [constructor impl-map & [parent]]
-  (if (map? constructor) ; no constructor case
+  (if (map? constructor)
     {:constructor identity
      :impl-map constructor}
     {:impl-map (or impl-map {})
      :constructor (or constructor (get @types parent) identity)}))
 
 (defn declare-type* [{:keys [id constructor facets spec gen]}]
-  )
+  (assert-nskw id)
+  (assert-new-type id)
+  (swap! types
+         assoc
+         id
+         {:constructor
+          (fn [& args]
+            (t name (apply constructor args)))
+          :spec spec})
+  (extend-type id facets))
 
 (defn declare-type
   "declare a new datatype, attaching it the given constructor
@@ -301,7 +310,7 @@
                      facet)))]
     (cond
       (fn? v) v
-      (known-type? v) (<f facet v) ;should handle circular stuff here
+      (known-type? v) (<f facet v)                          ;should handle circular stuff here
       :else (get-in @facets [facet ::any]))))
 
 (defn declare-derived-type
