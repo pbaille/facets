@@ -309,7 +309,7 @@ There is certainly good macros to write over all this, I haven't do it for now.
 
 ### Concrete usage
 
-Please see the datac namespace and datac.md to have a concrete exemple of how facets can be used 
+Please see the [datac source](https://github.com/pbaille/facets/blob/master/src/facets/datac.clj) and [docs](https://github.com/pbaille/facets/blob/master/datac.md) to have a concrete exemple of how facets can be used 
 
 ## Disclaimer
 
