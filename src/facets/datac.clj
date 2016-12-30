@@ -1,7 +1,7 @@
 (ns facets.datac
   (:import [clojure.lang Fn MapEntry IPersistentVector IPersistentList Iterate LongRange LazySeq IPersistentMap IPersistentSet Keyword Symbol Repeat Cycle Cons])
   (:require [facets.core :as f :refer [t t? t= t> <f <fs]]
-            [clojure.test :refer :all]))
+            [debugger.core :as d]))
 
 (f/reset-all!)
 
@@ -46,8 +46,7 @@
 (defn zip-eseqs
   "zip two eseq together taking care of their potential lazyness"
   [x y]
-  ; is there a way to avoid this crap?
-  ; TODO issus here when one of the two being lazy and not the other
+  ;; certainly the most ugly fn of this namespace
   (let [lx (lazy? x)
         ly (lazy? y)]
     (cond
@@ -272,3 +271,4 @@
                 (assoc (seq-type-base cr>)
                   ::fn (fn [x] #(reductions f % (cycle x)))
                   ::alt (fn [x y] (s> [x y]))))
+

@@ -307,6 +307,10 @@ You can test if something is reified
 
 There is certainly good macros to write over all this, I haven't do it for now.
 
+### Concrete usage
+
+Please see the datac namespace and datac.md to have a concrete exemple of how facets can be used 
+
 ## Disclaimer
 
 Early stage of development, performance optimisations are not yet adressed, error handling should be correct but i've not written any tests yet.
