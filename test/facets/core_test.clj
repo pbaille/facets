@@ -1,6 +1,6 @@
 (ns facets.core-test
   (:require [clojure.test :refer :all]
-            [foo.core :refer :all]))
+            [facets.core :as f]))
 
 (deftest a-test
   (testing "FIXME, I fail."

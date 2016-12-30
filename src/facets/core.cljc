@@ -25,6 +25,12 @@
   (println "prefs: " @prefs)
   (println "derivations: " @derivations))
 
+(defn reset-all! []
+  (reset! types {::any identity})
+  (reset! derivations {})
+  (reset! facets {})
+  (reset! aliases {}))
+
 ;; helpers -------------------
 
 (defn known-types []
@@ -51,6 +57,8 @@
   (every? (partial t? (t x)) xs))
 
 ;; checking ------------------
+
+#_(defn assert [& xs] true)
 
 (defn assert-nskw [name]
   (assert (and (keyword name) (namespace name))
@@ -176,6 +184,10 @@
     (declare-type sym))
   (swap! aliases assoc type sym))
 
+(defn declare-aliases [hm]
+  (doseq [[x y] hm]
+    (declare-alias x y)))
+
 (defn prefer
   "register a type preference,
    'type' will be prefered over 'types'"
@@ -225,8 +237,8 @@
            (assert-existing-derivations impl-map)
            (merge old-impl-map impl-map))))
 
-(defn extend-facets [& xs]
-  (doseq [[n impls] (partition 2 xs)]
+(defn extend-facets [m]
+  (doseq [[n impls] m]
     (extend-facet n impls)))
 
 (defn- no-default-handler [f]
@@ -258,9 +270,9 @@
   (register-default-impl name impl-map)
   (extend-facet name (dissoc impl-map ::any)))
 
-(defn declare-facets [& xs]
-  (doseq [[n impls] (partition 2 xs)]
-    (declare-facet n impls)))
+(defn declare-facets [m]
+  (doseq [[kw impl-map] m]
+    (declare-facet kw impl-map)))
 
 (defn <fs
   "get all facets implementations for the given type"
@@ -328,12 +340,14 @@
               ::parents parents
               ::impl-map impl-map)))
 
-(defn §
+(defn call
   "call facet f on args"
   [fk arg1 & args]
   (apply (<f fk arg1)
          arg1
          args))
+
+(def § call)
 
 ;; exemples -----------------
 
