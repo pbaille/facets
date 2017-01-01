@@ -33,7 +33,7 @@ You can still use your thing as regular clojure thing one as long as you take ca
 
 ##### Asking for type:
 
-the `t` funtion can also tell you the type of the given thing.
+the `t` function can also tell you the type of the given thing.
 
 ```clojure
 (t fancy)
@@ -42,7 +42,7 @@ the `t` funtion can also tell you the type of the given thing.
 
 ##### Check type
 
-the `t?` funtion can tell you if a thing is of type t.
+the `t?` function can tell you if a thing is of type t.
 
 ```clojure
 (t? :fancy-vector fancy)
