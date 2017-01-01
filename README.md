@@ -14,7 +14,7 @@ TODO, not deployed to clojars yet.
 
 ```clojure
 (ns myns 
-  (:require [foo.core :as f :refer [t t? t=]]))
+  (:require [facets.core :as f :refer [t t? t=]]))
 ```
 
 ##### Attach a type to something
