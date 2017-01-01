@@ -6,9 +6,9 @@ A clojure library for data combinations
 ## Overview
 
 datac is born of some frustrations when writing clojure code, it is hard to believe I know...
-there several ideas that puzzled me a lot
-the bluring between function and values is really a good thing in certain cases but not always I think.
-for instance sometimes you want a function be treated as its return value instead of beeing treated as the value of a transformation
+there several ideas that puzzled me a lot.  
+The bluring between function and values is really a good thing in certain cases but not always I think.  
+For instance sometimes you want a function be treated as its return value instead of beeing treated as the value of a transformation
 also function as value are really opaque and their transformation is really limited
 
 in our langage what we manipulate is really I think at the fundamental level, just representations of things
@@ -18,13 +18,13 @@ so if we treat our awesome clojure litterals and home made datatypes as represen
 
 a representation should have several attributes (further named facets) in order to operate with other representations
 
-a concrete value
-a potential action on other representations
-a defined way to receive given transformations
-a way to bring back our representation to an universal format
-a way to build it from this universal format
-a way to obtain its zero/identity value
-and certainly many others that I haven't found yet
+a concrete value  
+a potential action on other representations  
+a defined way to receive given transformations  
+a way to bring back our representation to an universal format  
+a way to build it from this universal format  
+a way to obtain its zero/identity value  
+and certainly many others that I haven't found yet  
 
 all those attributes can be viewed as protocols that any piece of data should implement
 not only at the class level but potentialy at the instance level
@@ -33,7 +33,7 @@ my implementation of this mecanism doesn't use protocols because there's to much
 for instance, a vector should represent several different types of data
 and protocols can only dispatch it as PersistentVector, I know that I can create some custom vectors with deftype but really it's too much ceremony in many cases
 
-With this in mind I've created a little lib called facets, that handle those pseudo type and dispatch stuff.
+With this in mind I've created a little lib called [facets](https://github.com/pbaille/facets), that handle those pseudo types and dispatch stuff.
 
 on top of those behaviors we can build several new operators that give us some generic and flexible way to work with our datatypes, here is the builtin ones
 
@@ -46,6 +46,8 @@ o zero (empty context)
 ◊ wrap
 
 ### Usage 
+
+TODO, not deployed to clojars yet  
 
 add this to your dependencies vector in project.clj
 

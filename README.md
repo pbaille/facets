@@ -8,6 +8,8 @@
 
 ## Usage
 
+TODO, not deployed to clojars yet.  
+
 ### Simple Types
 
 ```clojure
