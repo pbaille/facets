@@ -18,12 +18,13 @@ so if we treat our awesome clojure litterals and home made datatypes as represen
 
 a representation should have several attributes (further named facets) in order to operate with other representations
 
-a concrete value  
-a potential action on other representations  
-a defined way to receive given transformations  
-a way to bring back our representation to an universal format  
-a way to build it from this universal format  
-a way to obtain its zero/identity value  
+- a concrete value  
+- a potential action on other representations  
+- a defined way to receive given transformations  
+- a way to bring back our representation to an universal format  
+- a way to build it from this universal format  
+- a way to obtain its zero/identity value  
+
 and certainly many others that I haven't found yet  
 
 all those attributes can be viewed as protocols that any piece of data should implement
