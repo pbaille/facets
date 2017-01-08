@@ -2,6 +2,7 @@
 
 A clojure library for data combinations
 
+![alt tag](https://github.com/pbaille/facets/blob/master/datac.jpg)
 
 ## Overview
 
