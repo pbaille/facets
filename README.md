@@ -10,7 +10,11 @@
 
 ## Usage
 
-TODO, not deployed to clojars yet.  
+add `[facets "0.1.0-SNAPSHOT"]` to your dependencies vector in project.clj
+
+```clojure
+(ns my-ns (:require [facets.core]))
+``` 
 
 ### Simple Types
 
