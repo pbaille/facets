@@ -1,8 +1,6 @@
 # Datac
 
-![alt tag](https://github.com/pbaille/facets/blob/master/imgs/datac0.jpg)
-
-![alt tag](https://github.com/pbaille/facets/blob/master/imgs/datac5.jpg)
+![alt tag](https://github.com/pbaille/facets/blob/master/datac.jpg)
 
 A clojure library for data combinations
 
