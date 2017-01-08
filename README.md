@@ -1,5 +1,7 @@
 # FACETS
 
+![alt tag](https://github.com/pbaille/facets.jpg)
+
 ### Why?
 
 - Creating new types easily.
