@@ -1,6 +1,6 @@
 # FACETS
 
-![alt tag](https://github.com/pbaille/facets.jpg)
+![alt tag](https://github.com/pbaille/facets/blob/master/facets.jpg)
 
 ### Why?
 
