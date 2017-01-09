@@ -51,29 +51,10 @@ o zero (empty context)
 
 TODO, not deployed to clojars yet  
 
-add this to your dependencies vector in project.clj
+add `[facets "0.1.0-SNAPSHOT"]` to your dependencies vector in project.clj
 
 ```clojure
-TODO
-```
-
-then require it 
-
-```
-
-(require TODO)
-
-($ inc {:a 1 :b 2})
-;=> {:a 2, :b 3}
-
-=======
-
-(ns my-ns 
-  ;; ...
-  (:require TODO))
-($ inc {:a 1 :b 2})
-;=> {:a 2, :b 3}
-
+(ns my-ns (:require [facets.datac]))
 ```
 
 ### Feedback 
