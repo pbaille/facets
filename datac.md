@@ -39,13 +39,13 @@ With this in mind I've created a little lib called [facets](https://github.com/p
 
 on top of those behaviors we can build several new operators that give us some generic and flexible way to work with our datatypes, here is the builtin ones
 
-§ invocation
-$ distribution
-& zipping
-v value
-o zero (empty context)
-<< slurp
-◊ wrap
+§ invocation  
+$ distribution  
+& zipping  
+v value  
+o zero (empty context)  
+<< slurp  
+◊ wrap  
 
 ### Usage 
 
