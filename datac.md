@@ -37,7 +37,7 @@ and protocols can only dispatch it as PersistentVector, I know that I can create
 
 With this in mind I've created a little lib called [facets](https://github.com/pbaille/facets), that handle those pseudo types and dispatch stuff.
 
-on top of those behaviors we can build several new operators that give us some generic and flexible way to work with our datatypes, here is the builtin ones
+on top of those facets we can build several new operators that give us some generic and flexible way to work with our datatypes, here is the builtin ones
 
 `§` invocation  
 `$` distribution  
@@ -47,14 +47,12 @@ on top of those behaviors we can build several new operators that give us some g
 `<<` slurp  
 `◊` wrap  
 
-### Usage 
-
-TODO, not deployed to clojars yet  
+### Usage  
 
 add `[facets "0.1.0-SNAPSHOT"]` to your dependencies vector in project.clj
 
 ```clojure
-(ns my-ns (:require [facets.datac]))
+(ns my-ns (:require [facets.datac :as d]))
 ```
 
 ### Feedback 
