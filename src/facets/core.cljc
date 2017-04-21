@@ -1,6 +1,8 @@
 (ns facets.core
   (:refer-clojure :exclude [extend-type reify]))
 
+#?(:cljs (enable-console-print!))
+
 ;; state ---------------------
 
 ; {type-kw constructor-fn}
@@ -33,12 +35,16 @@
 
 ;; helpers -------------------
 
+(defn err [s]
+  #?(:clj  (Exception. s)
+     :cljs (js/Error. s)))
+
 (defn known-types []
   (set (keys @types)))
 
 (defn known-type? [t] ((known-types) t))
 
-(declare <alias)
+(declare <alias <aliases)
 
 (defn t
   "artity 2: assign type sym to e
@@ -49,7 +55,12 @@
 
 (defn t?
   "check if e is of type sym"
-  [sym e] (= sym (t e)))
+  [sym e]
+  (let [typ (type e)]
+    (or (= sym (t e))
+        (contains? (<aliases typ) sym)
+        (isa? typ sym)
+        #_(satisfies? sym e))))
 
 (defn t=
   "check if all given args are of same type"
@@ -119,15 +130,15 @@
 (defn throw-alias-error
   ([matches]
    (throw
-     (Exception.
+     (err
        (str "unable to resolve prefered alias from: \n"
             matches))))
   ([matches type]
    (throw
-     (Exception.
+     (err
        (str "several aliases: \n"
             (pr-str matches)
-            "\nmatch given type: \n"
+            "\n are matching the given type: "
             type
             "\nuse prefer function to register type preferences")))))
 
@@ -142,7 +153,6 @@
   [name impl-map]
   (assert-type name)
   (assert-type-impl-map impl-map)
-  (map assert-facet (keys impl-map))
   (doseq [[f impl] impl-map]
     (extend-facet f {name impl})))
 
@@ -173,7 +183,8 @@
            name
            (fn [& args]
              (t name (apply constructor args))))
-    (extend-type name impl-map)))
+    (extend-type name impl-map)
+    name))
 
 (defn declare-alias
   "register a type-alias
@@ -192,6 +203,7 @@
   "register a type preference,
    'type' will be prefered over 'types'"
   [type & types]
+  ;; TODO is this the correct behavior? should 'types' be merged with potentially existing other types
   (swap! prefs assoc type (set types)))
 
 (defn- get-prefered-alias [xs type]
@@ -207,11 +219,16 @@
       1 (first ret)
       (throw-alias-error ret type))))
 
-(defn <alias [type]
+(defn <aliases
+  "return a set of all matched aliases for a given type"
+  [type]
   (let [matches (filter
-                  #(isa? type %)
-                  (keys @aliases))
-        aliases* (set (map (partial get @aliases) matches))]
+                  #(or (isa? type %) (satisfies? % type))
+                  (keys @aliases))]
+    (set (map (partial get @aliases) matches))))
+
+(defn <alias [type]
+  (let [aliases* (<aliases type)]
     (condp = (count aliases*)
       0 nil
       1 (first aliases*)
@@ -244,7 +261,7 @@
 (defn- no-default-handler [f]
   (fn [x & _]
     (throw
-      (Exception.
+      (err
         (str "no implementation of facet: "
              f
              " for type: "
@@ -268,7 +285,8 @@
   (assert-nskw name)
   (assert-new-facet name)
   (register-default-impl name impl-map)
-  (extend-facet name (dissoc impl-map ::any)))
+  (extend-facet name (dissoc impl-map ::any))
+  name)
 
 (defn declare-facets [m]
   (doseq [[kw impl-map] m]
@@ -285,11 +303,14 @@
     {}
     @facets))
 
-(defn reified? [this]
+(defn reified?
+  [this]
   (and (-> this meta ::impl-map)
        (-> this meta ::parents)))
 
-(defn derived-impl-map [parents impl-map]
+(defn derived-impl-map
+  "compute an impl-map based on parents implementations"
+  [parents impl-map]
   (merge (reduce
            (fn [acc p]
              (merge acc (<fs p)))
@@ -347,11 +368,21 @@
          arg1
          args))
 
-(def § call)
+#_(def § call)
+
+(defn compiled-call
+  "maybe it should be a way to improve perfs,
+   at some point, when the user has defined all his types,
+   we could compile the dispatch mecanism from the current state, and return a faster call-fn...
+   Maybe it is not possible..."
+  []
+  (throw (err "Not Implemented yet")))
 
 ;; exemples -----------------
 
 (comment
+
+  (reset-all!)
 
   (declare-type ::mytype)
 
@@ -367,8 +398,8 @@
   (declare-type ::t3
                 (fn [x] (println "t3 constructor") {:t3k x}))
 
-  (declare-alias clojure.lang.IPersistentVector ::ivec)
-  (declare-alias clojure.lang.PersistentVector ::vec)
+  (declare-alias IVector ::ivec)
+  (declare-alias PersistentVector ::vec)
 
   (prefer ::ivec ::vec)
 
@@ -377,11 +408,13 @@
   (declare-facet ::f1
                  {::t1 (fn [this] :f1-t1)
                   ::vec (fn [this] :f1-vec)
+                  ::ivec (fn [this] :f1-ivec)
                   ::any (fn [this] :f1-any)})
 
   (declare-derived-type ::t2 [::t3 ::t1])
 
-  (println (§ ::f1 (t> ::t2 ["bla" {:a 1}])))
+  (println (call ::f1 (t> ::t2 ["bla" {:a 1}])))
+  (println (call ::f1 []))
 
   (extend-facet ::f1
                 {::t3 (fn [this] :f1-t3)})

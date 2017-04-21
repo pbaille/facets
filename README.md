@@ -67,7 +67,7 @@ the `t=` can test if several things are of same type.
 
 ```clojure
 (ns myns 
-  (:require [foo.core :as f :refer [t t? t= t>]]))
+  (:require [facets.core :as f :refer [t t? t= t>]]))
 ```
 
 ##### Declare a simple type called mytype:
@@ -272,7 +272,7 @@ Here the `::type1` implementation of `::facet1` will be used
 
 ### Anonymous types
 
-You can create anonymous types instances with the `reify`
+You can create anonymous types instances with the `reify` function
 
 passing it some parents:
 

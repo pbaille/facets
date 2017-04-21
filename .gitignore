@@ -9,6 +9,9 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
-foo.iml
+facets.iml
 .idea
+.DS_STORE
+figwheel_server.log
+.DS_Store
 

@@ -1,7 +1,6 @@
 (ns facets.datac
   (:import [clojure.lang Fn MapEntry IPersistentVector IPersistentList Iterate LongRange LazySeq IPersistentMap IPersistentSet Keyword Symbol Repeat Cycle Cons])
-  (:require [facets.core :as f :refer [t t? t= t> <f <fs]]
-            [debugger.core :as d]))
+  (:require [facets.core :as f :refer [t t? t= t> <f <fs]]))
 
 (f/reset-all!)
 
@@ -110,6 +109,7 @@
 
 (defn ◊
   "wrapping operator
+   a bit like (into (empty x) y)
   (◊ [] (list 1 2)) => [1 2]
   (◊ [12 13 14] (list 1 2)) => [1 2]"
   ([x] (conj-op x ◊))
