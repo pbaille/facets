@@ -1,5 +1,6 @@
 (ns foundation.dispatch
-  "a flexible dispatch mecanism")
+  "a flexible dispatch mecanism"
+  (:require [foundation.maps :as f :refer [§]]))
 
 ;; matching helpers
 
@@ -14,42 +15,9 @@
     (unresolvable-error! matches)
     f))
 
-;; simple
-
-(defn simple-dispatcher-defaults
-  "Not used yet"
-  [opts]
-  {:table {}
-   :prefer identity
-   :fail (constantly nil)
-   :dispatch
-   (fn [{:keys [fail table prefer]} arg]
-     (let [matches (filter (fn [[k v]] ((:match k) k arg)) table)]
-       (condp = (count matches)
-         0 (fail)
-         1 (-> matches first second)
-         (-> matches (partial prefer arg) first-and-only! second))))})
-
 ;; defaults field
 
-(def dispatcher0
-  {:pre-filt identity
-   :table {}
-   :conform identity
-   :match =
-   :prefer unresolvable-error!
-   :fail no-matches-err!
-   ;;:dispatch dispatch
-   })
-
-;; API ---------------------------------
-
-(defn dispatcher
-  "dispatcher type"
-  [opts]
-  (merge dispatcher0 opts))
-
-(defn dispatch
+(defn default-dispatch
   "ex:
   (-> (dispatcher
         {;; match either by equality either by predicate
@@ -64,119 +32,162 @@
                  keyword? :kw}})
 
       (dispatch :a))"
-  [{:keys [dispatch conform match prefer table fail pre-filt] :as d} arg]
-  (if dispatch
-    (dispatch d arg)
-    (let [conformed (conform arg)
-          [fm & rm :as matches]
-          (reduce
-            (fn [acc [pat v]]
-              (if (match pat conformed)
-                (assoc acc pat v)
-                acc))
-            {}
-            (pre-filt table))]
-      (cond
-        (not fm) (fail arg)
-        (not (seq rm)) (val fm)
-        :else (->> matches (prefer conformed) first-and-only! val)))))
+  [{::keys [conform match prefer table fail pre-filt] :as d} arg]
+  (let [conformed (conform arg)
+        [fm & rm :as matches]
+        (reduce
+          (fn [acc [pat v]]
+            (if (match pat conformed)
+              (assoc acc pat v)
+              acc))
+          {}
+          (pre-filt table))]
+    (cond
+      (not fm) (fail arg)
+      (not (seq rm)) (val fm)
+      :else (->> matches (prefer conformed) first-and-only! val))))
+
+(def dispatcher0
+  #::{:pre-filt identity
+      :table {}
+      :conform identity
+      :match =
+      :prefer unresolvable-error!
+      :fail no-matches-err!
+      :dispatch default-dispatch})
+
+;; API ---------------------------------
+
+(def dispatcher
+  "dispatcher type"
+  (f/map-constructor dispatcher0))
+
+(defn dispatched-fn-call
+  [this arg]
+  ((§ ::dispatch this arg) this arg))
+
+(def dispatched-fn
+  "a dispatcher that can be called"
+  (f/map-constructor
+    (assoc dispatcher0
+      ::f/call dispatched-fn-call)))
 
 (defn serialize
+
   "serialize several dispatchers into one
-  ex:
-  (-> (serialize
+   ex:
+   (-> (serialize
 
-        ;; regular dispatcher
-        (dispatcher {:table {:a :a :b :b}})
+         ;; regular dispatcher
+         (dispatcher {:table {:a :a :b :b}})
 
-        ;; predicate dispatcher
-        (dispatcher {:match #(%1 %2)
-                     :table {string? :str number? :num}}))
+         ;; predicate dispatcher
+         (dispatcher {:match #(%1 %2)
+                      :table {string? :str number? :num}}))
 
-    ;; (dispatch :a)
-    (dispatch 12))"
+     ;; (dispatch :a)
+     (dispatch 12))"
+
   [& ds]
-  {:dispatchers ds
-   :dispatch
-   (fn serial-dispatch [{[fd & rd :as ds] :dispatchers :as this} arg]
+  {::dispatchers ds
+   ::dispatch
+   (fn serial-dispatch [{[fd & rd :as ds] ::dispatchers :as this} arg]
      (if-not fd
        (no-matches-err! arg)
-       (dispatch (assoc fd :fail #(serial-dispatch (apply serialize rd) %))
-                 arg)))})
+       (§ ::dispatch
+          (assoc fd ::fail #(serial-dispatch (apply serialize rd) %))
+          arg)))})
+
+
 
 ;; tests ----------------------------
 
-(comment
-  (-> (dispatcher
-        { ;; match either by equality either by predicate
-         :match #(or (= %1 %2) (%1 %2))
-         ;; prefer regular matches over pred matches
-         :prefer (fn [_ matches] (remove (comp fn? key) matches))
-         ;; dispatch table
-         :table {:a :a
-                 :b :b
-                 keyword? :kw}})
-      (dispatch :a))
 
-  (-> (serialize
-        (dispatcher {:table {:a :a :b :b}})
-        (dispatcher {:match #(%1 %2)
-                     :table {string? :str number? :num}}))
-      #_(dispatch :a)
-      (dispatch 12)))
+
+
+
+(comment
+
+  (§ ::f/call
+     (dispatched-fn
+       {;; match either by equality either by predicate
+        :match #(or (= %1 %2) (%1 %2))
+        ;; prefer regular matches over pred matches
+        :prefer (fn [_ matches] (remove (comp fn? key) matches))
+        ;; dispatch table
+        :table {:a :a
+                :b :b
+                keyword? (fn [this kw] [kw this])}})
+     :afk)
+
+  (§ ::dispatch (dispatcher
+                  {:table {:a :a :b :b}})
+     :a)
+
+  (§ ::dispatch
+     (serialize
+       (dispatcher
+         {:table {:a :a :b :b}})
+       (dispatcher
+         {:match #(%1 %2)
+          :table {string? :str number? :num}}))
+     #_:a
+     "aze"
+     ))
 
 ;; dispatch END ------------------------------------------------------------------
 
 ;; Experiments, should not be here!
 
-(declare c>)
+(comment
+  (declare c>)
 
-(def env
-  (atom
-    {:links
-     (dispatcher
-       {:pre-filt
-        (fn [table [k _]]
-          (filter (fn [[_ v]] (contains? v k))
-                  table))
-        :match
-        (fn [matcher [k arg]] (matcher arg))
-        :table {}
-        :fail {}})
-     :combinators
-     {}}))
+  (def env
+    (atom
+      {:links
+       (dispatcher
+         {:pre-filt
+          (fn [table [k _]]
+            (filter (fn [[_ v]] (contains? v k))
+                    table))
+          :match
+          (fn [matcher [k arg]] (matcher arg))
+          :table {}
+          :fail {}})
+       :combinators
+       {}}))
 
-(defn f> [f arg]
-  (if-let [f* (f arg)]
-    (f* arg)
-    (if-let [f* (f (dispatch (:links @env) [f arg]))]
+  (defn f> [f arg]
+    (if-let [f* (f arg)]
       (f* arg)
+      (if-let [f* (f (dispatch (:links @env) [f arg]))]
+        (f* arg)
+        (throw (Exception. "no dispatch found")))))
+
+  (defn reg-link! [link table]
+    (swap! env update :links assoc link table))
+
+  (defn swap-link! [link f & args]
+    (apply swap! env update-in [:links link] f args))
+
+  (defn merge-link! [link m]
+    (swap-link! link merge m))
+
+  (def combinator-defaults
+    {:right (constantly identity)
+     :left identity
+     })
+
+  (defn combinator [opts])
+
+  (defn c> [f a1 a2]
+    (if-let [{:keys [right left]} (f (:combinators @env))]
+      ((f> right a1) (f> left a2))
       (throw (Exception. "no dispatch found")))))
-
-(defn reg-link! [link table]
-  (swap! env update :links assoc link table))
-
-(defn swap-link! [link f & args]
-  (apply swap! env update-in [:links link] f args))
-
-(defn merge-link! [link m]
-  (swap-link! link merge m))
-
-(def combinator-defaults
-  {:right (constantly identity)
-   :left identity
-   })
-
-(defn combinator [opts])
-
-(defn c> [f a1 a2]
-  (if-let [{:keys [right left]} (f (:combinators @env))]
-    ((f> right a1) (f> left a2))
-    (throw (Exception. "no dispatch found"))))
 
 ;;------------------------------------------------------
 
-(do
+(comment
   (defn ◊
     "assoc some implementations to x
      bs:: {kw impl}"
@@ -224,7 +235,7 @@
 ;; All with maps again...
 
 
-
+(+ 1 1)
 
 
 

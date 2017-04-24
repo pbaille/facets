@@ -2,24 +2,28 @@
   "an implementation of facets using foundation.dispatch
    curently only for unary facets"
   (:require [foundation.dispatch :as d]
-            [foundation.type :as t :refer [t]]))
+            [foundation.type :as t :refer [t]]
+            [foundation.maps :as f :refer [§]]))
 
 ;; helpers -------------------------------------------------
 
-(defn select-first-present [m ks]
+(defn select-first-present
+  [m ks]
   (loop [[fk & rk] ks]
     (if-let [v (get m fk)]
       {fk v}
       (when (seq rk)
         (recur rk)))))
 
-(defn derivations-chain [derivations x]
+(defn derivations-chain
+  [derivations x]
   (loop [ret [x]]
     (if-let [nxt (get derivations (last ret))]
       (recur (conj ret nxt))
       (vec (next ret)))))
 
-(defn prefered-matches [prefs matches]
+(defn prefered-matches
+  [prefs matches]
   (let [pats (set (keys matches))
 
         candidates
@@ -34,52 +38,45 @@
 
 ;; main ------------------------------------------------------
 
-(def defaults
-  {:type :facet
-   :type-impls {}
-   :struct-impls {}
-   :derivations {}
-   :prefs {}
-   :dispatch
-   (fn [{:keys [name type-impls struct-impls derivations prefs]} arg]
-     (or
-       ;; reified cases (arg own its impl)
-       (name arg)
-       (-> arg :facets name)
-       (-> arg meta name)
-       (-> arg meta :facets name)
-       ;; regular dispatch
-       (-> (d/serialize
-             ;; direct type match
-             (d/dispatcher
-               {:conform t
-                :table type-impls})
-             ;; derived type match
-             (d/dispatcher
-               {:conform #(conj (derivations-chain derivations (t %)) (type %))
-                :match #(contains? (set %2) %1)
-                :prefer #(select-first-present %2 %1)
-                :table type-impls})
-             ;; structural type match
-             (d/dispatcher
-               {:conform identity
-                :table struct-impls
-                :match #(%1 %2)
-                :prefer #(prefered-matches prefs %2)}))
-           (d/dispatch arg))))})
+(def facet0
+  #::{:type :facet
+      :type-impls {}
+      :struct-impls {}
+      :derivations {}
+      :prefs {}
+      ::f/call d/dispatched-fn-call
+      ::d/dispatch
+      (fn [{::keys [type-impls struct-impls derivations prefs] n :name} arg]
+        (or
+          ;; reified cases (arg own its impl)
+          (n arg)
+          (-> arg :facets n)
+          (-> arg meta n)
+          (-> arg meta :facets n)
+          ;; regular dispatch
+          (let [
 
-(defn facet
-  "facet constructor"
-  [opts]
-  (merge defaults opts))
+                disp (d/serialize
+                       ;; direct type match
+                       (d/dispatcher
+                         {:conform t
+                          :table type-impls})
+                       ;; derived type match
+                       (d/dispatcher
+                         {:conform #(conj (derivations-chain derivations (t %)) (type %))
+                          :match #(contains? (set %2) %1)
+                          :prefer #(select-first-present %2 %1)
+                          :table type-impls})
+                       ;; structural type match
+                       (d/dispatcher
+                         {:conform identity
+                          :table struct-impls
+                          :match #(%1 %2)
+                          :prefer #(prefered-matches prefs %2)}))]
+            (§ ::d/dispatch disp arg))))})
 
-(defn call
-  "arity 2: call a facet on something,
-   arity 1: turn facet into function"
-  ([f]
-   (partial call f))
-  ([f arg]
-   ((d/dispatch f arg) arg)))
+(def facet
+  (f/map-constructor facet0))
 
 ;; test -------------------------------------------------------------
 
@@ -105,9 +102,14 @@
                   {keyword? #{ident?}
                    string? #{ident?}}})]
 
-    (mapv #(call f %)
+    f
+
+    (§ ::d/dispatch f {:type :bar})
+
+    (mapv #(§ ::f/call f %)
           [{:type :foo}
            (with-meta [] {:type :bar})
+           {:type :baz :f1 (k "overiden!")}
            {:type :baz}
            "aze"
            'aze

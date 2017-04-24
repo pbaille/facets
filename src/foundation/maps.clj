@@ -1,5 +1,6 @@
 (ns foundation.maps
   (:require [foundation.futils :as fu]
+            [foundation.utils :as u]
             [foundation.transparent-function :refer [tfn]]))
 
 (def k (tfn [x] (constantly x)))
@@ -42,6 +43,12 @@
 (defn obj?
   [x]
   (::obj x))
+
+(defn map-constructor [defaults]
+  (let [auto-ns-fn (u/keys-auto-namespacer defaults)]
+    (fn constructor-fn
+      ([opts] (merge defaults (auto-ns-fn opts)))
+      ([x & xs] (constructor-fn (apply hash-map (cons x xs)))))))
 
 (declare getter)
 
@@ -89,6 +96,7 @@
   :bub"
   [this arg & [not-found]]
   (or (and (::resolve this) ((::resolve this) this arg not-found))
+      (arg this)
       (when-let [get-fn (getter this)]
         (get-fn this arg))
       (if-let [p (::parent this)]
@@ -127,6 +135,7 @@
   (§ ::match 1 11)
   (§ ::match string? :get)
   (§ ::get {:foo 12} :foo)
+  ($ ::get {::get get} )
 
   (do (obj {:baz "zer"}))
 

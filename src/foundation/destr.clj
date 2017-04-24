@@ -1,6 +1,7 @@
 (ns foundation.destr
   "an extensible implementation of destructuring"
   (:require [com.rpl.specter :as s]
+            [foundation.maps :as f :refer [§]]
             [foundation.dispatch :as d]))
 
 (declare destr)
@@ -79,7 +80,8 @@
        :table builtin-cmds})))
 
 (defn do-cmd [cmd seed]
-  ((d/dispatch @cmds-dispatcher cmd) cmd seed))
+  (println (§ ::f/dispatch @cmds-dispatcher cmd))
+  ((§ ::d/dispatch @cmds-dispatcher cmd) cmd seed))
 
 ;; extension -------------------------------------------------
 
@@ -129,4 +131,4 @@
   (destr '[:or {a 10 b 11}] 'seed)
   (destr '[:sf a [:a :b :c]] 'seed)
   (destr '{a :a b :b c :c :as t :or {a 10 c 12}} 'seed)
-  (destr '[[:sf a [:a :b :c]] [:as yop] [:keys [:a :e :f]]] 'seed))
+  (destr '[[:sf blob [:a :b :c]] [:as yop] [:keys [a e f]]] 'seed))
