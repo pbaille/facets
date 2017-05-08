@@ -1,8 +1,8 @@
-(ns foundation.destr
+(ns nemesis.destr
   "an extensible implementation of destructuring"
   (:require [com.rpl.specter :as s]
-            [foundation.maps :as f :refer [§]]
-            [foundation.dispatch :as d]))
+            [nemesis.maps :as f :refer [§]]
+            [nemesis.dispatch :as d]))
 
 (declare destr)
 
@@ -98,6 +98,8 @@
 
 (defn destr [pat seed]
   (cond
+
+    (::destructure pat) (§ ::destructure pat seed)
 
     (satisfies? IDestructure pat) (-destr pat seed)
 

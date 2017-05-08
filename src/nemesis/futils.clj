@@ -1,4 +1,4 @@
-(ns foundation.futils)
+(ns nemesis.futils)
 
 (defn p [& xs]
   (doseq [x xs]

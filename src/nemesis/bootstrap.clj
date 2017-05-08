@@ -1,4 +1,4 @@
-(ns foundation.bootstrap)
+(ns nemesis.bootstrap)
 
 (defn t=
   "type checker,

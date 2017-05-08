@@ -1,7 +1,7 @@
-(ns foundation.maps
-  (:require [foundation.futils :as fu]
-            [foundation.utils :as u]
-            [foundation.transparent-function :refer [tfn]]))
+(ns nemesis.maps
+  (:require [nemesis.futils :as fu]
+            [nemesis.utils :as u]
+            [nemesis.transparent-function :refer [tfn]]))
 
 (def k (tfn [x] (constantly x)))
 
@@ -11,6 +11,7 @@
   (with-meta
     #::{:value fu/arg1
         :call fu/arg1
+        :swap #(apply § ::call %2 %1 %&)
         :match =
         :get get
         :print #(vary-meta % dissoc :type)
@@ -44,15 +45,17 @@
   [x]
   (::obj x))
 
-(defn map-constructor [defaults]
+(defn map-constructor
+  [defaults
+   & [{:keys [init]
+       :or {init identity}
+       :as options}]]
   (let [auto-ns-fn (u/keys-auto-namespacer defaults)]
     (fn constructor-fn
-      ([opts] (merge defaults (auto-ns-fn opts)))
+      ([opts] (init (merge defaults (auto-ns-fn opts))))
       ([x & xs] (constructor-fn (apply hash-map (cons x xs)))))))
 
 (declare getter)
-
-(meta #'get)
 
 (defn focus
   "like get-in but keep a ref to parent
@@ -126,6 +129,20 @@
       (throw (Exception. (str "no field " k " in " this))))
     (apply § k (obj this) args)))
 
+(defmacro §>
+  "§ version of the -> macro
+  ex:
+  (§> this (::action1 arg1 arg2) (::action2 arg1 arg2))
+  <=>
+  (§ ::action2 (§ ::action1 this arg1 arg2) arg1 arg2)"
+  [this & exprs]
+  (reduce
+    (fn [ret expr]
+      (let [[first-expr & rest-expr] (if (list? expr) expr (list expr))]
+        (concat [§ first-expr] (list ret) rest-expr)))
+    this
+    exprs))
+
 (comment
   ((::resolve obj0) obj0 ::call)
   (§ ::value (obj int?))
@@ -135,7 +152,7 @@
   (§ ::match 1 11)
   (§ ::match string? :get)
   (§ ::get {:foo 12} :foo)
-  ($ ::get {::get get} )
+  ($ ::get {::get get})
 
   (do (obj {:baz "zer"}))
 

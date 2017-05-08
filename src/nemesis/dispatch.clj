@@ -1,6 +1,6 @@
-(ns foundation.dispatch
+(ns nemesis.dispatch
   "a flexible dispatch mecanism"
-  (:require [foundation.maps :as f :refer [§]]))
+  (:require [nemesis.maps :as f :refer [§]]))
 
 ;; matching helpers
 

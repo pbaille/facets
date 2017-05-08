@@ -1,9 +1,9 @@
-(ns foundation.facet
-  "an implementation of facets using foundation.dispatch
+(ns nemesis.facet
+  "an implementation of facets using nemesis.dispatch
    curently only for unary facets"
-  (:require [foundation.dispatch :as d]
-            [foundation.type :as t :refer [t]]
-            [foundation.maps :as f :refer [§]]))
+  (:require [nemesis.dispatch :as d]
+            [nemesis.type :as t :refer [t]]
+            [nemesis.maps :as f :refer [§]]))
 
 ;; helpers -------------------------------------------------
 

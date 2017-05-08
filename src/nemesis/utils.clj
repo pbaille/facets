@@ -1,4 +1,4 @@
-(ns foundation.utils
+(ns nemesis.utils
   (:require [clojure.set]))
 
 (defn keys-auto-namespacer

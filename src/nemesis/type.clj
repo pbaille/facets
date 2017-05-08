@@ -1,4 +1,4 @@
-(ns foundation.type
+(ns nemesis.type
   (:refer-clojure :exclude [type]))
 
 (defn t [x]

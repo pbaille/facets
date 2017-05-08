@@ -1,4 +1,4 @@
-(ns foundation.transparent-function
+(ns nemesis.transparent-function
   (:require [clojure pprint string]))
 
 (defmacro tfn
