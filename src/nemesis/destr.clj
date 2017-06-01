@@ -80,7 +80,6 @@
        :table builtin-cmds})))
 
 (defn do-cmd [cmd seed]
-  (println (§ ::f/dispatch @cmds-dispatcher cmd))
   ((§ ::d/dispatch @cmds-dispatcher cmd) cmd seed))
 
 ;; extension -------------------------------------------------
@@ -96,7 +95,10 @@
 
 ;; api -------------------------------------------------------
 
-(defn destr [pat seed]
+(defn destr
+
+  [pat seed]
+
   (cond
 
     (::destructure pat) (§ ::destructure pat seed)
